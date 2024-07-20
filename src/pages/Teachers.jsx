@@ -1,5 +1,6 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { getAllTeachers } from "./apis";
+import { useNavigate } from "react-router-dom";
 
 const initialTeachers = [
   {
@@ -25,7 +26,7 @@ const initialTeachers = [
 
 const Teachers = () => {
 
-        const [teachers, setTeachers] = useState(initialTeachers);
+        const [teachers, setTeachers] = useState([]);
         const [formData, setFormData] = useState({ name: "", class: "", image: "" });
       
         const handleChange = (e) => {
@@ -46,6 +47,25 @@ const Teachers = () => {
           setTeachers([...teachers, newTeacher]);
           setFormData({ name: "", class: "", image: "", studentId:"" });
         };
+
+      
+        const naviagte = useNavigate();
+      
+        useEffect(() => {
+          const loadTeachers = async () => {
+           try {
+            const {teachers} = await getAllTeachers();
+    
+            setTeachers(teachers);
+           } catch (error) {
+            if (error.message === "Unauthorized") {
+                     localStorage.clear();
+                     naviagte("/login");
+                    }
+           }
+        };
+         loadTeachers()
+        }, [])
       
   return (
     <div className="container mt-4">

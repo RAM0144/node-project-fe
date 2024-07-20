@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { createStudent, deleteStudent, getAllStudents } from "./apis";
-
+import { useNavigate } from "react-router-dom";
 
 // const initialStudents = [
 //     {
@@ -34,11 +34,21 @@ const Students = () => {
         image: "",
         teacherId: "",
     });
+    
+    const navigate = useNavigate();
 
     const loadStudents = async () => {
-        const {students} = await getAllStudents();
+        try {
+            const {students} = await getAllStudents();
 
         setStudents(students);
+        } catch (error) {
+            if (error.message === "Unauthorized") {
+             localStorage.clear();
+             navigate("/login");
+            }
+        }
+        
     };
     
     // delete Student
